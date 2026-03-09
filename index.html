@@ -1,16 +1,53 @@
-<input type="file" onchange="startAnalysis(this)">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>食品配料表扫描器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="font-family:-apple-system;text-align:center;padding:40px">
 
-<script>
-async function startAnalysis(input) {
-    const file = input.files[0];
-    if (!file) return;
-    
-    console.log("开始分析图片...");
-    
-    // 把你原来 script.js 里的所有逻辑粘贴到这里
-    // 记得使用我们改好的新路径 "/.netlify/functions/analyze"
-}
-</script>
+    <h2>食品配料表扫描</h2>
+    <p>上传食品配料表图片</p>
 
+    <input type="file" onchange="startAnalysis(this)" accept="image/*">
+
+    <div id="result" style="margin-top:20px; text-align:left; display:inline-block; max-width:400px; white-space:pre-wrap;"></div>
+
+    <script>
+    async function startAnalysis(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerText = "正在分析中，请稍候...";
+        console.log("开始读取图片...");
+
+        // 1. 将图片转为 Base64 格式（这是给 AI 传输的常用方式）
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64Image = e.target.result;
+
+            try {
+                console.log("正在发送请求到后端...");
+                const res = await fetch("/.netlify/functions/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ image: base64Image })
+                });
+
+                const data = await res.json();
+                console.log("AI返回结果:", data);
+                
+                // 将结果显示在页面上
+                resultDiv.innerText = data.result || JSON.stringify(data);
+            } catch (err) {
+                console.error("请求出错:", err);
+                resultDiv.innerText = "扫描失败: " + err.message;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+    </script>
 </body>
 </html>
