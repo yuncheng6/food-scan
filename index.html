@@ -1,20 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>食品配料表扫描器</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
-<body style="font-family:-apple-system;text-align:center;padding:40px">
-
-<h2>食品配料表扫描</h2>
-
-<p>上传食品配料表图片</p>
-
 <input type="file" onchange="startAnalysis(this)">
 
-<script src="script.js"></script>
+<script>
+async function startAnalysis(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    console.log("开始分析图片...");
+    
+    // 把你原来 script.js 里的所有逻辑粘贴到这里
+    // 记得使用我们改好的新路径 "/.netlify/functions/analyze"
+}
+</script>
 
 </body>
 </html>
