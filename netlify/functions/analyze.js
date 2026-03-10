@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+
 
 exports.handler = async (event) => {
   // 只允许 POST 请求
