@@ -1,24 +1,16 @@
 exports.handler = async (event) => {
-  // 1. 验证请求方法
-  if (event.httpMethod !== "POST") {
-    return { 
-      statusCode: 405, 
-      body: JSON.stringify({ error: "仅支持 POST 请求" }) 
-    };
-  }
+if (event.httpMethod !== "POST") {
+return { statusCode: 405, body: JSON.stringify({ error: "仅支持 POST" }) };
+}
 
-  try {
-    const { image } = JSON.parse(event.body);
-    
-    // 2. 自动适配环境变量（兼容大写和小写）
-    const apiKey = process.env.GEMINI_API_KEY || process.env.gemini_api_key;
+try {
+const { image } = JSON.parse(event.body);
+const apiKey = process.env.GEMINI_API_KEY || process.env.gemini_api_key;
 
-    if (!apiKey) {
-      return { 
-        statusCode: 500, 
-        body: JSON.stringify({ error: "API Key 未配置，请在 Netlify 检查环境变量" }) 
-      };
-    }
+} catch (error) {
+return { statusCode: 500, body: JSON.stringify({ error: "系统错误: " + error.message }) };
+}
+};
 
     // 3. 处理 Base64 图片数据
     const base64Data = image.split(',')[1];
