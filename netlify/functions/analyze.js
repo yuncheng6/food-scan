@@ -7,12 +7,13 @@ try {
 const { image } = JSON.parse(event.body);
 const apiKey = process.env.GEMINI_API_KEY || process.env.gemini_api_key;
 
-if (!apiKey) {
-  return { statusCode: 500, body: JSON.stringify({ error: "API Key 未配置" }) };
+} catch (error) {
+return { statusCode: 500, body: JSON.stringify({ error: "系统错误: " + error.message }) };
 }
+};
 
 const base64Data = image.split(',')[1];
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
 const payload = {
   contents: [{
