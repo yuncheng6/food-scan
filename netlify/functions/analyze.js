@@ -7,23 +7,25 @@ try {
 const { image } = JSON.parse(event.body);
 const apiKey = process.env.GEMINI_API_KEY || process.env.gemini_api_key;
 
-} catch (error) {
-return { statusCode: 500, body: JSON.stringify({ error: "系统错误: " + error.message }) };
+if (!apiKey) {
+  return { statusCode: 500, body: JSON.stringify({ error: "API Key 未配置" }) };
 }
-};
 
 const base64Data = image.split(',')[1];
+
+// 关键点：这是发送给 Google 的地址
 const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
 const payload = {
   contents: [{
     parts: [
-      { text: "你是一个食品安全专家。请分析这张配料表图片：1.列出所有成分 2.标出有害添加剂 3.给出健康建议。请用中文回答。" },
+      { text: "你是一个食品安全专家。请分析这张配料表图片：1.列出所有成分 2.标出哪些是添加剂 3.给出健康建议。请用中文回答。" },
       { inlineData: { mimeType: "image/jpeg", data: base64Data } }
     ]
   }]
 };
 
+// 关键点：这是真正执行“发送”动作的代码
 const response = await fetch(apiUrl, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -32,6 +34,7 @@ const response = await fetch(apiUrl, {
 
 const data = await response.json();
 
+// 关键点：处理 Google 返回的分析结果
 if (data.error) {
   return { statusCode: 500, body: JSON.stringify({ error: "API报错: " + data.error.message }) };
 }
